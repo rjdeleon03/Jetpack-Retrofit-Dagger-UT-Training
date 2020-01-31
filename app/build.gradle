@@ -49,6 +49,9 @@ dependencies {
 
     implementation "com.google.android.material:material:$materialVersion"
 
+    // SharedPreferences
+    implementation "androidx.preference:preference-ktx:1.1.0"
+
     // Lifecycle (ViewModel + LiveData)
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifeCycleVersion"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifeCycleVersion"
