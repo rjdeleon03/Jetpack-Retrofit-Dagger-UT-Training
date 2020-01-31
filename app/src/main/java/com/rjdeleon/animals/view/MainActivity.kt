@@ -1,7 +1,8 @@
-package com.rjdeleon.animals
+package com.rjdeleon.animals.view
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.rjdeleon.animals.R
 
 class MainActivity : AppCompatActivity() {
 
