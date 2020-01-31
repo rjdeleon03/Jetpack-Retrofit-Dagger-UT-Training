@@ -40,6 +40,11 @@ class ListViewModel(application: Application): AndroidViewModel(application) {
         }
     }
 
+    fun hardRefresh() {
+        loading.value = true
+        getKey()
+    }
+
     private fun startRefreshing() {
         mInvalidApiKey = false
         loadError.value = false

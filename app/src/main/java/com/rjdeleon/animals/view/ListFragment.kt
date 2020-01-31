@@ -64,7 +64,7 @@ class ListFragment : Fragment() {
         }
 
         refreshLayout.setOnRefreshListener {
-            mViewModel.refresh()
+            mViewModel.hardRefresh()
             refreshLayout.isRefreshing = false
         }
 
