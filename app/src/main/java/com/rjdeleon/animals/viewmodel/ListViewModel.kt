@@ -13,7 +13,13 @@ class ListViewModel(application: Application): AndroidViewModel(application) {
     val loading by lazy { MutableLiveData<Boolean>() }
 
     fun refresh() {
+        startRefreshing()
         getAnimals()
+    }
+
+    private fun startRefreshing() {
+        loadError.value = false
+        loading.value = true
     }
 
     private fun getAnimals() {
