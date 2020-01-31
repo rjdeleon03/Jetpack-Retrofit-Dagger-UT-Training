@@ -9,27 +9,28 @@ import android.view.ViewGroup
 import androidx.navigation.Navigation
 
 import com.rjdeleon.animals.R
-import kotlinx.android.synthetic.main.fragment_list.*
+import kotlinx.android.synthetic.main.fragment_detail.*
 
 /**
  * A simple [Fragment] subclass.
  */
-class ListFragment : Fragment() {
+class DetailFragment : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_list, container, false)
+        return inflater.inflate(R.layout.fragment_detail, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        buttonDetail.setOnClickListener {
-            val action = ListFragmentDirections.actionGoToDetail()
+        buttonList.setOnClickListener {
+            val action = DetailFragmentDirections.actionGoToList()
             Navigation.findNavController(it).navigate(action)
         }
     }
+
 }
