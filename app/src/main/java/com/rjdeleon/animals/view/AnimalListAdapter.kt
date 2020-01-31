@@ -6,6 +6,8 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.rjdeleon.animals.R
 import com.rjdeleon.animals.model.Animal
+import com.rjdeleon.animals.util.getProgressDrawable
+import com.rjdeleon.animals.util.loadImage
 import kotlinx.android.synthetic.main.item_animal.view.*
 
 class AnimalListAdapter(private val mAnimalList: ArrayList<Animal>)
@@ -34,6 +36,8 @@ class AnimalListAdapter(private val mAnimalList: ArrayList<Animal>)
 
         fun bindData(animal: Animal) {
             mItemView.animalName.text = animal.name
+            mItemView.animalImage
+                .loadImage(animal.imageUrl, getProgressDrawable(mItemView.context))
         }
 
     }
