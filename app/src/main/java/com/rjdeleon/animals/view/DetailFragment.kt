@@ -13,7 +13,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 
-import com.rjdeleon.animals.R
+import com.rjdeleon.animals.databinding.FragmentDetailBinding
 import com.rjdeleon.animals.model.Animal
 import com.rjdeleon.animals.util.getProgressDrawable
 import com.rjdeleon.animals.util.loadImage
@@ -25,13 +25,16 @@ import kotlinx.android.synthetic.main.fragment_detail.*
 class DetailFragment : Fragment() {
 
     private var mAnimal: Animal? = null
+    private lateinit var mDataBinding: FragmentDetailBinding
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_detail, container, false)
+
+        mDataBinding = FragmentDetailBinding.inflate(inflater, container, false)
+        return mDataBinding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -41,18 +44,11 @@ class DetailFragment : Fragment() {
             mAnimal = DetailFragmentArgs.fromBundle(it).animal
         }
 
-        context?.let {
-            animalImage.loadImage(mAnimal?.imageUrl, getProgressDrawable(it))
-        }
-
-        animalName.text = mAnimal?.name
-        animalLocation.text = mAnimal?.location
-        animalLifespan.text = mAnimal?.lifeSpan
-        animalDiet.text = mAnimal?.diet
-
         mAnimal?.imageUrl?.let {
             setupBackgroundColor(it)
         }
+
+        mDataBinding.animal = mAnimal
 
     }
 
@@ -68,7 +64,7 @@ class DetailFragment : Fragment() {
                     Palette.from(resource)
                         .generate { palette ->
                             val intColor = palette?.lightVibrantSwatch?.rgb ?: 0
-                            animalLayout.setBackgroundColor(intColor)
+                            mDataBinding.backgroundColor = intColor
                         }
                 }
             })
