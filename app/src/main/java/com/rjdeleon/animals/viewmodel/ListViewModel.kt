@@ -4,7 +4,9 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.rjdeleon.animals.di.AppModule
+import com.rjdeleon.animals.di.CONTEXT_APP
 import com.rjdeleon.animals.di.DaggerViewModelComponent
+import com.rjdeleon.animals.di.TypeOfContext
 import com.rjdeleon.animals.model.Animal
 import com.rjdeleon.animals.model.AnimalApiService
 import com.rjdeleon.animals.model.ApiKey
@@ -22,8 +24,12 @@ class ListViewModel(application: Application): AndroidViewModel(application) {
     val loadError by lazy { MutableLiveData<Boolean>() }
     val loading by lazy { MutableLiveData<Boolean>() }
 
-    @Inject lateinit var apiService: AnimalApiService
-    @Inject lateinit var prefs: SharedPreferencesHelper
+    @Inject
+    lateinit var apiService: AnimalApiService
+
+    @Inject
+    @field:TypeOfContext(CONTEXT_APP)
+    lateinit var prefs: SharedPreferencesHelper
 
     private val mDisposable = CompositeDisposable()
 
