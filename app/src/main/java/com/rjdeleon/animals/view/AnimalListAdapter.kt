@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import com.rjdeleon.animals.R
+import com.rjdeleon.animals.databinding.ItemAnimalBinding
 import com.rjdeleon.animals.model.Animal
 import com.rjdeleon.animals.util.getProgressDrawable
 import com.rjdeleon.animals.util.loadImage
@@ -15,11 +16,10 @@ class AnimalListAdapter(private val mAnimalList: ArrayList<Animal>)
     : RecyclerView.Adapter<AnimalListAdapter.AnimalViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AnimalViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_animal, parent, false)
-        val viewHolder = AnimalViewHolder(view)
-        viewHolder.setOnClickListener {
-            val action = ListFragmentDirections.actionGoToDetail(mAnimalList[it])
+        val dataBinding = ItemAnimalBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val viewHolder = AnimalViewHolder(dataBinding)
+        viewHolder.setOnClickListener { index, view ->
+            val action = ListFragmentDirections.actionGoToDetail(mAnimalList[index])
             Navigation.findNavController(view).navigate(action)
         }
         return viewHolder
@@ -37,17 +37,19 @@ class AnimalListAdapter(private val mAnimalList: ArrayList<Animal>)
         notifyDataSetChanged()
     }
 
-    class AnimalViewHolder(private val mItemView: View)
-        : RecyclerView.ViewHolder(mItemView) {
+    class AnimalViewHolder(private val mDataBinding: ItemAnimalBinding)
+        : RecyclerView.ViewHolder(mDataBinding.root) {
 
         fun bindData(animal: Animal) {
-            mItemView.animalName.text = animal.name
-            mItemView.animalImage
-                .loadImage(animal.imageUrl, getProgressDrawable(mItemView.context))
+            mDataBinding.animal = animal
         }
 
-        fun setOnClickListener(listener: (Int) -> Unit) {
-            mItemView.setOnClickListener { listener(adapterPosition) }
+        fun setOnClickListener(listener: (Int, View) -> Unit) {
+            mDataBinding.listener = object: AnimalClickListener {
+                override fun onClick(v: View) {
+                    listener(adapterPosition, v)
+                }
+            }
         }
 
     }
