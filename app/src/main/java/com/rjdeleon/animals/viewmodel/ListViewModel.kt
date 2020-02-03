@@ -3,6 +3,7 @@ package com.rjdeleon.animals.viewmodel
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import com.rjdeleon.animals.di.AppModule
 import com.rjdeleon.animals.di.DaggerViewModelComponent
 import com.rjdeleon.animals.model.Animal
 import com.rjdeleon.animals.model.AnimalApiService
@@ -22,15 +23,17 @@ class ListViewModel(application: Application): AndroidViewModel(application) {
     val loading by lazy { MutableLiveData<Boolean>() }
 
     @Inject lateinit var apiService: AnimalApiService
+    @Inject lateinit var prefs: SharedPreferencesHelper
 
     private val mDisposable = CompositeDisposable()
-    private val mPrefs = SharedPreferencesHelper(application)
 
     private var mInvalidApiKey = false
 
     init {
         DaggerViewModelComponent
-            .create()
+            .builder()
+            .appModule(AppModule(getApplication()))
+            .build()
             .inject(this)
     }
 
@@ -61,7 +64,7 @@ class ListViewModel(application: Application): AndroidViewModel(application) {
     }
 
     private fun getKeyFromSharedPrefs() =
-        mPrefs.getApiKey()
+        prefs.getApiKey()
 
     private fun getKey() {
         // Create a disposable and dismiss when VM is destroyed
@@ -77,7 +80,7 @@ class ListViewModel(application: Application): AndroidViewModel(application) {
                             loadError.value = true
                             loading.value = false
                         } else {
-                            mPrefs.saveApiKey(apiKey.key)
+                            prefs.saveApiKey(apiKey.key)
                             getAnimals(apiKey.key)
                         }
 
