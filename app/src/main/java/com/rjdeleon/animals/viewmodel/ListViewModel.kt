@@ -3,6 +3,7 @@ package com.rjdeleon.animals.viewmodel
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import com.rjdeleon.animals.di.DaggerViewModelComponent
 import com.rjdeleon.animals.model.Animal
 import com.rjdeleon.animals.model.AnimalApiService
 import com.rjdeleon.animals.model.ApiKey
@@ -11,6 +12,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.observers.DisposableSingleObserver
 import io.reactivex.schedulers.Schedulers
+import javax.inject.Inject
 
 class ListViewModel(application: Application): AndroidViewModel(application) {
 
@@ -19,11 +21,18 @@ class ListViewModel(application: Application): AndroidViewModel(application) {
     val loadError by lazy { MutableLiveData<Boolean>() }
     val loading by lazy { MutableLiveData<Boolean>() }
 
+    @Inject lateinit var apiService: AnimalApiService
+
     private val mDisposable = CompositeDisposable()
-    private val mApiService = AnimalApiService()
     private val mPrefs = SharedPreferencesHelper(application)
 
     private var mInvalidApiKey = false
+
+    init {
+        DaggerViewModelComponent
+            .create()
+            .inject(this)
+    }
 
     override fun onCleared() {
         super.onCleared()
@@ -57,7 +66,7 @@ class ListViewModel(application: Application): AndroidViewModel(application) {
     private fun getKey() {
         // Create a disposable and dismiss when VM is destroyed
         mDisposable.add(
-            mApiService.getApiKey()
+            apiService.getApiKey()
                 .subscribeOn(Schedulers.newThread()) // Operation is performed in the background
                 .observeOn(AndroidSchedulers.mainThread()) // Post action is done in main thread
                 .subscribeWith(object: DisposableSingleObserver<ApiKey>() {
@@ -91,7 +100,7 @@ class ListViewModel(application: Application): AndroidViewModel(application) {
 
     private fun getAnimals(key: String) {
         mDisposable.add(
-            mApiService.getAnimals(key)
+            apiService.getAnimals(key)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(object: DisposableSingleObserver<List<Animal>>() {
