@@ -19,6 +19,10 @@ import javax.inject.Inject
 
 class ListViewModel(application: Application): AndroidViewModel(application) {
 
+    constructor(application: Application, test: Boolean = true): this(application) {
+        mInjected = true
+    }
+
     // Lazy - instantiated only when it is needed
     val animals by lazy { MutableLiveData<List<Animal>>() }
     val loadError by lazy { MutableLiveData<Boolean>() }
@@ -34,13 +38,16 @@ class ListViewModel(application: Application): AndroidViewModel(application) {
     private val mDisposable = CompositeDisposable()
 
     private var mInvalidApiKey = false
+    private var mInjected = false
 
     init {
-        DaggerViewModelComponent
-            .builder()
-            .appModule(AppModule(getApplication()))
-            .build()
-            .inject(this)
+        if (mInjected) {
+            DaggerViewModelComponent
+                .builder()
+                .appModule(AppModule(getApplication()))
+                .build()
+                .inject(this)
+        }
     }
 
     override fun onCleared() {
