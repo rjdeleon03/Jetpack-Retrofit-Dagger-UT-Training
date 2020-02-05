@@ -43,7 +43,7 @@ class ListViewModelTest {
     fun setup() {
         MockitoAnnotations.initMocks(this)
 
-        val testComponent = DaggerViewModelComponent.builder()
+        DaggerViewModelComponent.builder()
             .appModule(AppModule(application))
             .apiModule(ApiModuleTest(animalApiService))
             .prefsModule(PrefsModuleTest(prefs))
