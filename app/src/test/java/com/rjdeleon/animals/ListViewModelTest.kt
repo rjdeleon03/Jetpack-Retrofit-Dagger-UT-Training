@@ -6,6 +6,7 @@ import com.rjdeleon.animals.di.AppModule
 import com.rjdeleon.animals.di.DaggerViewModelComponent
 import com.rjdeleon.animals.model.Animal
 import com.rjdeleon.animals.model.AnimalApiService
+import com.rjdeleon.animals.model.ApiKey
 import com.rjdeleon.animals.util.SharedPreferencesHelper
 import com.rjdeleon.animals.viewmodel.ListViewModel
 import io.reactivex.Scheduler
@@ -43,7 +44,7 @@ class ListViewModelTest {
     fun setup() {
         MockitoAnnotations.initMocks(this)
 
-        val testComponent = DaggerViewModelComponent.builder()
+        DaggerViewModelComponent.builder()
             .appModule(AppModule(application))
             .apiModule(ApiModuleTest(animalApiService))
             .prefsModule(PrefsModuleTest(prefs))
@@ -85,6 +86,25 @@ class ListViewModelTest {
         Assert.assertEquals(false, listViewModel.loading.value)
     }
 
+    @Test
+    fun getAnimalsFailure() {
+        Mockito.`when`(prefs.getApiKey())
+            .thenReturn(key)
 
+        val testSingle = Single.error<List<Animal>>(Throwable())
+        val keySingle = Single.just(ApiKey("OK", key))
+
+        Mockito.`when`(animalApiService.getAnimals(key))
+            .thenReturn(testSingle)
+        Mockito.`when`(animalApiService.getApiKey())
+            .thenReturn(keySingle)
+
+        listViewModel.refresh()
+
+        Assert.assertEquals(null, listViewModel.animals.value)
+        Assert.assertEquals(true, listViewModel.loadError.value)
+        Assert.assertEquals(false, listViewModel.loading.value)
+
+    }
 
 }
