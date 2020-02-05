@@ -6,6 +6,7 @@ import com.rjdeleon.animals.di.AppModule
 import com.rjdeleon.animals.di.DaggerViewModelComponent
 import com.rjdeleon.animals.model.Animal
 import com.rjdeleon.animals.model.AnimalApiService
+import com.rjdeleon.animals.model.ApiKey
 import com.rjdeleon.animals.util.SharedPreferencesHelper
 import com.rjdeleon.animals.viewmodel.ListViewModel
 import io.reactivex.Scheduler
@@ -85,6 +86,64 @@ class ListViewModelTest {
         Assert.assertEquals(false, listViewModel.loading.value)
     }
 
+    @Test
+    fun getAnimalsFailure() {
+        Mockito.`when`(prefs.getApiKey())
+            .thenReturn(key)
 
+        val testSingle = Single.error<List<Animal>>(Throwable())
+        val keySingle = Single.just(ApiKey("OK", key))
 
+        Mockito.`when`(animalApiService.getAnimals(key))
+            .thenReturn(testSingle)
+        Mockito.`when`(animalApiService.getApiKey())
+            .thenReturn(keySingle)
+
+        listViewModel.refresh()
+
+        Assert.assertEquals(null, listViewModel.animals.value)
+        Assert.assertEquals(true, listViewModel.loadError.value)
+        Assert.assertEquals(false, listViewModel.loading.value)
+
+    }
+
+    @Test
+    fun getApiKeySuccess() {
+
+        val testSingle = Single.just(ApiKey("", key))
+        Mockito.`when`(animalApiService.getApiKey())
+            .thenReturn(testSingle)
+
+        val animal = Animal("cow", null, null, null, null, null, null)
+        val animalList = listOf(animal)
+        val animalTestSingle = Single.just(animalList)
+        Mockito.`when`(animalApiService.getAnimals(key))
+            .thenReturn(animalTestSingle)
+
+        listViewModel.refresh()
+
+        Assert.assertEquals(false, listViewModel.loadError.value)
+        Assert.assertEquals(false, listViewModel.loading.value)
+
+    }
+
+    @Test
+    fun getApiKeyFailure() {
+
+        val testSingle = Single.error<ApiKey>(Throwable())
+        Mockito.`when`(animalApiService.getApiKey())
+            .thenReturn(testSingle)
+
+        val animal = Animal("cow", null, null, null, null, null, null)
+        val animalList = listOf(animal)
+        val animalTestSingle = Single.just(animalList)
+        Mockito.`when`(animalApiService.getAnimals(key))
+            .thenReturn(animalTestSingle)
+
+        listViewModel.refresh()
+
+        Assert.assertEquals(true, listViewModel.loadError.value)
+        Assert.assertEquals(false, listViewModel.loading.value)
+
+    }
 }
