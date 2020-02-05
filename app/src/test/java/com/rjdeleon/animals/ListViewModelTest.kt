@@ -107,4 +107,43 @@ class ListViewModelTest {
 
     }
 
+    @Test
+    fun getApiKeySuccess() {
+
+        val testSingle = Single.just(ApiKey("", key))
+        Mockito.`when`(animalApiService.getApiKey())
+            .thenReturn(testSingle)
+
+        val animal = Animal("cow", null, null, null, null, null, null)
+        val animalList = listOf(animal)
+        val animalTestSingle = Single.just(animalList)
+        Mockito.`when`(animalApiService.getAnimals(key))
+            .thenReturn(animalTestSingle)
+
+        listViewModel.refresh()
+
+        Assert.assertEquals(false, listViewModel.loadError.value)
+        Assert.assertEquals(false, listViewModel.loading.value)
+
+    }
+
+    @Test
+    fun getApiKeyFailure() {
+
+        val testSingle = Single.error<ApiKey>(Throwable())
+        Mockito.`when`(animalApiService.getApiKey())
+            .thenReturn(testSingle)
+
+        val animal = Animal("cow", null, null, null, null, null, null)
+        val animalList = listOf(animal)
+        val animalTestSingle = Single.just(animalList)
+        Mockito.`when`(animalApiService.getAnimals(key))
+            .thenReturn(animalTestSingle)
+
+        listViewModel.refresh()
+
+        Assert.assertEquals(true, listViewModel.loadError.value)
+        Assert.assertEquals(false, listViewModel.loading.value)
+
+    }
 }
